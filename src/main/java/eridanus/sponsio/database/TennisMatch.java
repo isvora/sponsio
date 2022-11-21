@@ -18,6 +18,12 @@ public class TennisMatch {
     @Id
     private Long id;
 
+    @Column(name = "player_one")
+    private String playerOne;
+
+    @Column(name = "player_two")
+    private String playerTwo;
+
     @OneToMany(mappedBy = "tennisMatch")
     @JsonIgnore
     private Set<Odds> odds;

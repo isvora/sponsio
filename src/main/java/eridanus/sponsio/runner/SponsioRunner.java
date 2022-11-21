@@ -1,11 +1,15 @@
 package eridanus.sponsio.runner;
 
-import eridanus.sponsio.service.MozzartService;
+import eridanus.sponsio.model.mozzart.MozzartMatch;
+import eridanus.sponsio.model.mozzart.MozzartResponse;
+import eridanus.sponsio.service.bookies.MozzartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,10 +21,16 @@ public class SponsioRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        log.info("Starting Sponsio...");
+        log.info("Collecting mozzart tennis games");
+
         var mozzartMatches = mozzartService.getMozzartTennisMatches();
-        mozzartMatches.forEach( mozzartResponse -> mozzartService.odds(mozzartResponse.getMatches().stream()
-                .flatMap(mozzartMatch -> mozzartMatch.getId().describeConstable().stream())
-                .collect(Collectors.toList()))
-        );
+        for (MozzartResponse mozzartResponse : mozzartMatches) {
+            var matchIds = mozzartResponse.getMatches().stream()
+                    .flatMap(mozzartMatch -> mozzartMatch.getId().describeConstable().stream()).toList();
+            mozzartService.getTennisOdds(matchIds);
+        }
+
+        log.info("Finished collecting mozzart tennis games");
     }
 }

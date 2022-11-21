@@ -11,7 +11,7 @@ public class OddsService {
 
     private final OddsRepository oddsRepository;
 
-    public Odds saveOdds(Odds entity) {
-       return oddsRepository.save(entity);
+    public void saveOdds(Odds entity) {
+        oddsRepository.save(entity);
     }
 }

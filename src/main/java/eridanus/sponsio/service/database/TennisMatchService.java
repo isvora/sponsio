@@ -5,13 +5,19 @@ import eridanus.sponsio.repository.TennisMatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class TennisMatchService {
 
     private final TennisMatchRepository tennisMatchRepository;
 
-    public TennisMatch saveTennisMatch(TennisMatch entity) {
-        return tennisMatchRepository.save(entity);
+    public void saveTennisMatch(TennisMatch entity) {
+        tennisMatchRepository.save(entity);
+    }
+
+    public Optional<TennisMatch> findById(long id) {
+        return tennisMatchRepository.findById(id);
     }
 }

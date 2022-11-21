@@ -3,19 +3,27 @@ package eridanus.sponsio.service.bookies;
 import eridanus.sponsio.configuration.MozzartConfiguration;
 import eridanus.sponsio.json.MozzartMatchesJson;
 import eridanus.sponsio.json.MozzartTennisJson;
-import eridanus.sponsio.model.mozzart.MozzartResponse;
+import eridanus.sponsio.mapper.OddsMapper;
+import eridanus.sponsio.mapper.TennisMatchMapper;
+import eridanus.sponsio.model.mozzart.*;
+import eridanus.sponsio.service.database.OddsService;
+import eridanus.sponsio.service.database.TennisMatchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +38,10 @@ public class MozzartService {
     private final MozzartTennisJson mozzartTennisJson;
 
     private final MozzartMatchesJson mozzartMatchesJson;
+
+    private final TennisMatchService tennisMatchService;
+
+    private final OddsService oddsService;
 
     public List<MozzartResponse> getMozzartTennisMatches() {
         List<MozzartResponse> responses = new ArrayList<>();
@@ -55,19 +67,43 @@ public class MozzartService {
             }
         }
 
+        saveTennisMatches(responses);
+
         return responses;
     }
 
-    public void odds(List<Integer> matchIds) {
+    public List<MozzartOddsResponse> getTennisOdds(List<Integer> matchIds) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         mozzartMatchesJson.setMatchIds(matchIds);
-        var response = restTemplate.postForEntity(
-                mozzartConfiguration.getOdds(),
-                new HttpEntity<>(mozzartMatchesJson, headers),
-                String.class);
 
-        log.info(response.toString());
+        var response = restTemplate.exchange(
+                mozzartConfiguration.getOdds(),
+                HttpMethod.POST,
+                new HttpEntity<>(mozzartMatchesJson, headers),
+                new ParameterizedTypeReference<List<MozzartOddsResponse>>() {}
+        );
+
+        for (var mozzartOddsResponse : Objects.requireNonNull(response.getBody())) {
+            var mozzartOdds = new ArrayList<>(mozzartOddsResponse.getMozzartOdds().values());
+            var tennisMatch = tennisMatchService.findById(
+                    OddsMapper.calculateTennisMatchId(mozzartOdds.get(0), mozzartOdds.get(1)));
+            if (tennisMatch.isPresent()) {
+                oddsService.saveOdds(OddsMapper.map(mozzartOdds.get(0), mozzartOdds.get(1), tennisMatch.get()));
+            } else {
+                log.info("No match found for given id");
+            }
+        }
+
+        return response.getBody();
+    }
+
+    private void saveTennisMatches(List<MozzartResponse> mozzartResponses) {
+        for (MozzartResponse mozzartResponse : mozzartResponses) {
+            for (MozzartMatch mozzartMatch : mozzartResponse.getMatches()) {
+                tennisMatchService.saveTennisMatch(TennisMatchMapper.map(mozzartMatch));
+            }
+        }
     }
 }
