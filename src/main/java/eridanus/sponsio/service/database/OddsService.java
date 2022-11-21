@@ -5,6 +5,8 @@ import eridanus.sponsio.repository.OddsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OddsService {

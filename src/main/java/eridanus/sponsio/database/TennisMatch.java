@@ -24,7 +24,7 @@ public class TennisMatch {
     @Column(name = "player_two")
     private String playerTwo;
 
-    @OneToMany(mappedBy = "tennisMatch")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "tennisMatch")
     @JsonIgnore
     private Set<Odds> odds;
 }

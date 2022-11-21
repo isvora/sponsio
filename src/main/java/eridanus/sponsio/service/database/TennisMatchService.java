@@ -5,6 +5,7 @@ import eridanus.sponsio.repository.TennisMatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,5 +20,9 @@ public class TennisMatchService {
 
     public Optional<TennisMatch> findById(long id) {
         return tennisMatchRepository.findById(id);
+    }
+
+    public List<TennisMatch> getAllMatches() {
+        return tennisMatchRepository.findAll();
     }
 }
