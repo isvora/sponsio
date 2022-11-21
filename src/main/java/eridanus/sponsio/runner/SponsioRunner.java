@@ -1,16 +1,11 @@
 package eridanus.sponsio.runner;
 
-import eridanus.sponsio.model.mozzart.MozzartMatch;
 import eridanus.sponsio.model.mozzart.MozzartResponse;
 import eridanus.sponsio.service.bookies.MozzartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

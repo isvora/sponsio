@@ -5,7 +5,9 @@ import eridanus.sponsio.json.MozzartMatchesJson;
 import eridanus.sponsio.json.MozzartTennisJson;
 import eridanus.sponsio.mapper.OddsMapper;
 import eridanus.sponsio.mapper.TennisMatchMapper;
-import eridanus.sponsio.model.mozzart.*;
+import eridanus.sponsio.model.mozzart.MozzartMatch;
+import eridanus.sponsio.model.mozzart.MozzartOddsResponse;
+import eridanus.sponsio.model.mozzart.MozzartResponse;
 import eridanus.sponsio.service.database.OddsService;
 import eridanus.sponsio.service.database.TennisMatchService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +72,7 @@ public class MozzartService {
         return responses;
     }
 
-    public List<MozzartOddsResponse> getTennisOdds(List<Integer> matchIds) {
+    public void getTennisOdds(List<Integer> matchIds) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -95,8 +95,6 @@ public class MozzartService {
                 log.info("No match found for given id");
             }
         }
-
-        return response.getBody();
     }
 
     private void saveTennisMatches(List<MozzartResponse> mozzartResponses) {
