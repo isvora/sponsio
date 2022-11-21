@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SponsioApplication {
+public class Sponsio {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SponsioApplication.class, args);
+		SpringApplication.run(Sponsio.class, args);
 	}
 
 }
