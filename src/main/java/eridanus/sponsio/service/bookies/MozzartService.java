@@ -1,4 +1,4 @@
-package eridanus.sponsio.service;
+package eridanus.sponsio.service.bookies;
 
 import eridanus.sponsio.configuration.MozzartConfiguration;
 import eridanus.sponsio.json.MozzartMatchesJson;
