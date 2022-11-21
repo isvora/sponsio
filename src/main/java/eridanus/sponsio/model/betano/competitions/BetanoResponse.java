@@ -1,15 +1,13 @@
-package eridanus.sponsio.model.betano;
+package eridanus.sponsio.model.betano.competitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
-import java.util.List;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-public class BetanoData {
+public class BetanoResponse {
 
-    @JsonProperty("regionGroups")
-    private List<BetanoRegionGroups> regionGroups;
+    @JsonProperty("data")
+    private BetanoData data;
 }

@@ -1,4 +1,4 @@
-package eridanus.sponsio.model.betano;
+package eridanus.sponsio.model.betano.competitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,8 +6,11 @@ import lombok.Getter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-public class BetanoResponse {
+public class BetanoLeague {
 
-    @JsonProperty("data")
-    private BetanoData data;
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("url")
+    private String url;
 }

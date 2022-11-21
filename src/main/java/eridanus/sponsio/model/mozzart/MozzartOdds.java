@@ -13,8 +13,8 @@ public class MozzartOdds {
     private String gameDescription;
 
     @JsonProperty("subGame")
-    private void gameDescription(Map<String, String> brand) {
-        gameDescription = brand.get("subGameDescription");
+    private void gameDescription(Map<String, String> subGame) {
+        gameDescription = subGame.get("subGameDescription");
     }
 
     @JsonProperty("value")

@@ -1,4 +1,4 @@
-package eridanus.sponsio.model.betano;
+package eridanus.sponsio.model.betano.competitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,8 +8,8 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-public class BetanoRegion {
+public class BetanoRegionGroups {
 
-    @JsonProperty("leagues")
-    private List<BetanoLeague> leagues;
+    @JsonProperty("regions")
+    private List<BetanoRegion> regions;
 }

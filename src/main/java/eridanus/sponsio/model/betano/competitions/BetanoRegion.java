@@ -1,16 +1,15 @@
-package eridanus.sponsio.model.betano;
+package eridanus.sponsio.model.betano.competitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-public class BetanoLeague {
+public class BetanoRegion {
 
-    @JsonProperty("name")
-    private String name;
-
-    @JsonProperty("url")
-    private String url;
+    @JsonProperty("leagues")
+    private List<BetanoLeague> leagues;
 }

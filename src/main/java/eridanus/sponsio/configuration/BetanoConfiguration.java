@@ -10,4 +10,7 @@ public class BetanoConfiguration {
 
     @Value("${betano.api.tennis}")
     private String tennisApi;
+
+    @Value("${betano.api}")
+    private String api;
 }
