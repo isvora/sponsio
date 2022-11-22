@@ -55,10 +55,10 @@ public class BetanoService {
     private void saveBetanoMatches(BetanoMatchData betanoMatchData) {
         betanoMatchData.getBlocks().get(0).getEvents().forEach(betanoEvent -> {
             var tennisMatch = TennisMatchMapper.map(betanoEvent);
-            if (tennisMatch != null) {
-                tennisMatchService.saveTennisMatch(tennisMatch);
+            if (tennisMatch.isPresent()) {
+                tennisMatchService.saveTennisMatch(tennisMatch.get());
 
-                var odds = OddsMapper.mapBetanoEventToOdds(betanoEvent, tennisMatch);
+                var odds = OddsMapper.mapBetanoEventToOdds(betanoEvent, tennisMatch.get());
 
                 if (odds != null) {
                     oddsService.saveOdds(odds);

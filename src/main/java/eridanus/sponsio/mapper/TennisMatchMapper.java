@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public final class TennisMatchMapper {
@@ -29,18 +30,17 @@ public final class TennisMatchMapper {
                 .build();
     }
 
-    public static TennisMatch map(BetanoEvent betanoEvent) {
+    public static Optional<TennisMatch> map(BetanoEvent betanoEvent) {
         var playerNames = getPlayerNames(betanoEvent.getShortName());
         if (playerNames.isEmpty()) {
-            log.info("Empty player names");
-            return null;
+            return Optional.empty();
         } else {
             String id = playerNames.get(0) + BettingUtils.VS + playerNames.get(1);
-            return TennisMatch.builder()
+            return Optional.of(TennisMatch.builder()
                     .playerOne(playerNames.get(0))
                     .playerTwo(playerNames.get(1))
                     .id((long) Math.abs(id.hashCode()))
-                    .build();
+                    .build());
         }
     }
 
