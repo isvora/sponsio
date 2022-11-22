@@ -3,6 +3,7 @@ package eridanus.sponsio.mapper;
 import eridanus.sponsio.database.Odds;
 import eridanus.sponsio.database.TennisMatch;
 import eridanus.sponsio.helper.BettingUtils;
+import eridanus.sponsio.helper.Bookie;
 import eridanus.sponsio.model.betano.matches.BetanoEvent;
 import eridanus.sponsio.model.mozzart.MozzartOdds;
 import org.springframework.util.StringUtils;
@@ -36,15 +37,16 @@ public final class OddsMapper {
         return description.split("\\.")[0];
     }
 
-    public static Odds map(MozzartOdds mozzartOddsOne, MozzartOdds mozzartOddsTwo, TennisMatch tennisMatch) {
+    public static Odds mapMozzartOddsToOdds(MozzartOdds mozzartOddsOne, MozzartOdds mozzartOddsTwo, TennisMatch tennisMatch) {
         return Odds.builder()
                 .oddOne(Double.parseDouble(mozzartOddsOne.getValue()))
                 .oddTwo(Double.parseDouble(mozzartOddsTwo.getValue()))
                 .tennisMatch(tennisMatch)
+                .bookie(Bookie.MOZZART)
                 .build();
     }
 
-    public static Odds map(BetanoEvent betanoEvent, TennisMatch tennisMatch) {
+    public static Odds mapBetanoEventToOdds(BetanoEvent betanoEvent, TennisMatch tennisMatch) {
         if (!betanoEvent.getMarkets().isEmpty()) {
             var market = betanoEvent.getMarkets().get(0);
             if (market.getName().equals(BettingUtils.WINNER)) {
@@ -52,6 +54,7 @@ public final class OddsMapper {
                         .tennisMatch(tennisMatch)
                         .oddOne(market.getPlayerOneOdds())
                         .oddTwo(market.getPlayerTwoOdds())
+                        .bookie(Bookie.BETANO)
                         .build();
             }
         }

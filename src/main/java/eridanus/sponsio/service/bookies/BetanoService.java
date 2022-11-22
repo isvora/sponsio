@@ -14,12 +14,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -62,7 +58,7 @@ public class BetanoService {
             if (tennisMatch != null) {
                 tennisMatchService.saveTennisMatch(tennisMatch);
 
-                var odds = OddsMapper.map(betanoEvent, tennisMatch);
+                var odds = OddsMapper.mapBetanoEventToOdds(betanoEvent, tennisMatch);
 
                 if (odds != null) {
                     oddsService.saveOdds(odds);

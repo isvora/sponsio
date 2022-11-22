@@ -90,7 +90,7 @@ public class MozzartService {
             var tennisMatch = tennisMatchService.findById(
                     OddsMapper.calculateTennisMatchId(mozzartOdds.get(0), mozzartOdds.get(1)));
             if (tennisMatch.isPresent()) {
-                oddsService.saveOdds(OddsMapper.map(mozzartOdds.get(0), mozzartOdds.get(1), tennisMatch.get()));
+                oddsService.saveOdds(OddsMapper.mapMozzartOddsToOdds(mozzartOdds.get(0), mozzartOdds.get(1), tennisMatch.get()));
             } else {
                 log.info("No match found for given id");
             }

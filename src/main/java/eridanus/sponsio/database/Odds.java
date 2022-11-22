@@ -1,5 +1,6 @@
 package eridanus.sponsio.database;
 
+import eridanus.sponsio.helper.Bookie;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,4 +27,7 @@ public class Odds {
     @ManyToOne
     @JoinColumn(name="tennis_match", nullable=false)
     private TennisMatch tennisMatch;
+
+    @Column(name = "bookie")
+    private Bookie bookie;
 }
