@@ -1,7 +1,16 @@
 package eridanus.sponsio.helper;
 
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum Bookie {
 
-    BETANO, MOZZART
+    BETANO("Betano"),
+    MOZZART("Mozzart");
+
+    private final String bookieName;
 
 }
