@@ -6,6 +6,7 @@ import eridanus.sponsio.helper.BettingUtils;
 import eridanus.sponsio.model.mozzart.MozzartResponse;
 import eridanus.sponsio.service.bookies.BetanoService;
 import eridanus.sponsio.service.bookies.MozzartService;
+import eridanus.sponsio.service.bookies.WinnerTennisService;
 import eridanus.sponsio.service.database.TennisMatchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +22,17 @@ public class SponsioRunner implements CommandLineRunner {
 
     private final MozzartService mozzartService;
     private final BetanoService betanoService;
+    private final WinnerTennisService winnerTennisService;
     private final TennisMatchService tennisMatchService;
 
     @Override
     public void run(String... args) {
         log.info("Starting Sponsio...");
+        log.info("Collecting Winner tennis games");
+
+        winner();
+
+        log.info("Finished collecting Winner tennis games");
         log.info("Collecting Mozzart tennis games");
 
         mozzart();
@@ -66,6 +73,10 @@ public class SponsioRunner implements CommandLineRunner {
                 }
             });
         }
+    }
+
+    private void winner() {
+        winnerTennisService.getTennisData();
     }
 
     private void calculateOdds() {
