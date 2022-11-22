@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "football_match")
+@Table(name = "football_odds")
 @Getter
 @Setter
 @Builder
@@ -29,7 +29,7 @@ public class FootballOdds {
 
     @ManyToOne
     @JoinColumn(name="football_match", nullable=false)
-    private FootballMatch tennisMatch;
+    private FootballMatch footballMatch;
 
     @Column(name = "bookie")
     private Bookie bookie;
