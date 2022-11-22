@@ -63,5 +63,7 @@ Calculating your profit is just as easy:
 
 **$1000 - $958.33 = $41.67**
 
-And finally, to calculate your return on investment you simply divide your profit by the initial amount invested: $41.67 ÷ $958.33 = 4.35%
+And finally, to calculate your return on investment you simply divide your profit by the initial amount invested: 
+
+**$41.67 ÷ $958.33 = 4.35%**
 
