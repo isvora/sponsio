@@ -2,7 +2,7 @@ package eridanus.sponsio.service;
 
 import eridanus.sponsio.configuration.MozzartConfiguration;
 import eridanus.sponsio.json.MozzartMatchesJson;
-import eridanus.sponsio.json.MozzartTennisJson;
+import eridanus.sponsio.json.MozzartCompetitionJson;
 import eridanus.sponsio.model.mozzart.MozzartMatch;
 import eridanus.sponsio.model.mozzart.MozzartParticipant;
 import eridanus.sponsio.model.mozzart.MozzartResponse;
@@ -38,7 +38,7 @@ class MozzartServiceTests {
     private RestTemplate restTemplate;
 
     @Mock
-    private MozzartTennisJson mozzartTennisJson;
+    private MozzartCompetitionJson mozzartCompetitionJson;
 
     @Mock
     private MozzartMatchesJson mozzartMatchesJson;
@@ -51,7 +51,7 @@ class MozzartServiceTests {
 
     @BeforeEach
     void init() {
-        mozzartService = new MozzartService(mozzartConfiguration, restTemplate, mozzartTennisJson, mozzartMatchesJson, tennisMatchService, oddsService);
+        mozzartService = new MozzartService(mozzartConfiguration, restTemplate, mozzartCompetitionJson, mozzartMatchesJson, tennisMatchService, oddsService);
     }
 
     @Test

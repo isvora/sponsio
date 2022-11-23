@@ -1,6 +1,8 @@
 {
   "date":"all",
-  "sportIds": [5],
+  "sportIds": [0],
+  "competitionIds":[],
   "sort":"bycompetition",
+  "size": 50,
   "offset": 0
 }

@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@PropertySource(value = "classpath:mozzart_tennis.json",
+@PropertySource(value = "classpath:mozzart_competition.json",
         factory = JsonPropertySourceFactory.class)
 @ConfigurationProperties
 @Getter
 @Setter
-public class MozzartTennisJson {
+public class MozzartCompetitionJson {
 
     private String date;
 
@@ -23,4 +23,6 @@ public class MozzartTennisJson {
     private String sort;
 
     private int offset;
+
+    private int size;
 }

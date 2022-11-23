@@ -4,9 +4,8 @@ import eridanus.sponsio.database.Odds;
 import eridanus.sponsio.database.TennisMatch;
 import eridanus.sponsio.helper.BettingUtils;
 import eridanus.sponsio.model.mozzart.MozzartResponse;
-import eridanus.sponsio.service.bookies.BetanoService;
-import eridanus.sponsio.service.bookies.MozzartService;
-import eridanus.sponsio.service.bookies.WinnerTennisService;
+import eridanus.sponsio.service.bookies.*;
+import eridanus.sponsio.service.database.FootballMatchService;
 import eridanus.sponsio.service.database.TennisMatchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -24,13 +24,38 @@ public class SponsioRunner implements CommandLineRunner {
     private final BetanoService betanoService;
     private final WinnerTennisService winnerTennisService;
     private final TennisMatchService tennisMatchService;
+    private final BetanoFootballService betanoFootballService;
+    private final FootballMatchService footballMatchService;
+    private final MozzartFootballService mozzartFootballService;
 
     @Override
     public void run(String... args) {
         log.info("Starting Sponsio...");
+
+        tennis();
+
+        football();
+
+        log.info("Finished");
+    }
+
+    private void football() {
+        log.info("Collecting Mozzart football matches");
+
+        mozzartFootball();
+
+        log.info("Finished collecting Mozzart football games");
+        log.info("Collecting Betano football games");
+
+        betanoFootball();
+
+        log.info("Finished collecting Betano football games");
+        log.info("Checking for arbitrage possibilities");
+    }
+
+    private void tennis() {
         log.info("Collecting Winner tennis games");
 
-        winner();
 
         log.info("Finished collecting Winner tennis games");
         log.info("Collecting Mozzart tennis games");
@@ -46,8 +71,35 @@ public class SponsioRunner implements CommandLineRunner {
         log.info("Checking for arbitrage possibilities");
 
         calculateOdds();
+    }
 
-        log.info("Finished");
+    private void mozzartFootball() {
+        var mozzartFootballMatches = mozzartFootballService.getFootballMatches();
+        for (MozzartResponse mozzartResponse : mozzartFootballMatches) {
+            var matchIds = mozzartResponse.getMatches().stream()
+                    .flatMap(mozzartMatch -> mozzartMatch.getId().describeConstable().stream()).toList();
+            mozzartFootballService.getFootballOdds(matchIds);
+        }
+    }
+
+    private void betanoFootball() {
+        var betanoResponse = betanoFootballService.getBetanoFootballLeagues();
+        for (var regionGroup : betanoResponse.getData().getRegionGroups()) {
+            var region = regionGroup.getRegions();
+            region.forEach(betanoRegion -> {
+                betanoRegion.getLeagues().removeIf(betanoLeague ->
+                        betanoLeague.getName().contains(BettingUtils.BEFORE_BETS));
+                for (var league : betanoRegion.getLeagues()) {
+                    betanoFootballService.getBetanoFotbalMatchesByCompetition(league.getUrl());
+                }
+            });
+        }
+
+        var x = footballMatchService.findAlL();
+        var y = x.parallelStream().filter(footballMatch -> footballMatch.getFootballOdds().size() > 1).toList();
+        y.forEach(footballMatch -> {
+            log.info(footballMatch.getTeamOne() + " - " + footballMatch.getTeamTwo());
+        });
     }
 
     private void mozzart() {
@@ -73,10 +125,6 @@ public class SponsioRunner implements CommandLineRunner {
                 }
             });
         }
-    }
-
-    private void winner() {
-        winnerTennisService.getTennisData();
     }
 
     private void calculateOdds() {
