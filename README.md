@@ -191,14 +191,6 @@ Betting $452.63 on an Everton win, $310.76 on a draw, and $236.60 on an Everton 
 2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : $161.73736690890652 on Canada to win on Boookie Betano
 2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Guaranteed profit: 2.7716748352204377
 
-2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Arbitrage opportunity found!
-2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Belgia vs Canada
-2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Bet: 
-2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : $599.2387166938553 on Belgia to win on Boookie Betano
-2022-11-23 15:51:08.276  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : $227.29744426318652 on Belgia to draw on Boookie Betano
-2022-11-23 15:51:08.277  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : $173.4638390429581 on Canada to win on Boookie Betano
-2022-11-23 15:51:08.277  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Guaranteed profit: -11.256117455138792
-
 2022-11-23 15:51:08.278  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Arbitrage opportunity found!
 2022-11-23 15:51:08.278  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Levadiakos vs Aris Salonic
 2022-11-23 15:51:08.278  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Bet: 
