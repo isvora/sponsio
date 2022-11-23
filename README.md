@@ -133,6 +133,7 @@ Betting $452.63 on an Everton win, $310.76 on a draw, and $236.60 on an Everton 
 
 ## Arbitrages found
 
+### Football
 ```
 2022-11-23 15:51:08.270  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Arbitrage opportunity found!
 2022-11-23 15:51:08.270  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Germania vs Japonia
@@ -205,4 +206,16 @@ Betting $452.63 on an Everton win, $310.76 on a draw, and $236.60 on an Everton 
 2022-11-23 15:51:08.278  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : $241.28621703707276 on Aris Salonic to draw on Boookie Betano
 2022-11-23 15:51:08.278  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : $188.64195150171142 on Levadiakos to win on Boookie Betano
 2022-11-23 15:51:08.278  INFO 22912 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Guaranteed profit: 37.53073325941273
+```
+
+
+### Tennis
+
+```
+2022-11-23 16:13:58.228  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Arbitrage found for match: Nuudi M. vs Schoofs B.
+2022-11-23 16:13:58.228  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Odds from BETANO: 1.21, Odds from BETANO: 9.5
+2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Bet 826.4462809917355 on 1.21 BETANO
+2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Bet 105.26315789473684 on 9.5 BETANO
+2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Winning: 68.29056111352759
+2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Odds from BETANO: 2.95, Odds fr
 ```
