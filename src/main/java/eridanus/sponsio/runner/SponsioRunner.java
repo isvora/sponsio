@@ -1,10 +1,17 @@
 package eridanus.sponsio.runner;
 
+import eridanus.sponsio.database.FootballMatch;
+import eridanus.sponsio.database.FootballOdds;
 import eridanus.sponsio.database.Odds;
 import eridanus.sponsio.database.TennisMatch;
+import eridanus.sponsio.helper.ArbitrageType;
 import eridanus.sponsio.helper.BettingUtils;
+import eridanus.sponsio.model.betting.Arbitrage;
 import eridanus.sponsio.model.mozzart.MozzartResponse;
-import eridanus.sponsio.service.bookies.*;
+import eridanus.sponsio.service.bookies.BetanoFootballService;
+import eridanus.sponsio.service.bookies.BetanoService;
+import eridanus.sponsio.service.bookies.MozzartFootballService;
+import eridanus.sponsio.service.bookies.MozzartService;
 import eridanus.sponsio.service.database.FootballMatchService;
 import eridanus.sponsio.service.database.TennisMatchService;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,7 +30,6 @@ public class SponsioRunner implements CommandLineRunner {
 
     private final MozzartService mozzartService;
     private final BetanoService betanoService;
-    private final WinnerTennisService winnerTennisService;
     private final TennisMatchService tennisMatchService;
     private final BetanoFootballService betanoFootballService;
     private final FootballMatchService footballMatchService;
@@ -51,13 +58,11 @@ public class SponsioRunner implements CommandLineRunner {
 
         log.info("Finished collecting Betano football games");
         log.info("Checking for arbitrage possibilities");
+
+        calculateFootballOdds();
     }
 
     private void tennis() {
-        log.info("Collecting Winner tennis games");
-
-
-        log.info("Finished collecting Winner tennis games");
         log.info("Collecting Mozzart tennis games");
 
         mozzart();
@@ -94,12 +99,6 @@ public class SponsioRunner implements CommandLineRunner {
                 }
             });
         }
-
-        var x = footballMatchService.findAlL();
-        var y = x.parallelStream().filter(footballMatch -> footballMatch.getFootballOdds().size() > 1).toList();
-        y.forEach(footballMatch -> {
-            log.info(footballMatch.getTeamOne() + " - " + footballMatch.getTeamTwo());
-        });
     }
 
     private void mozzart() {
@@ -127,6 +126,16 @@ public class SponsioRunner implements CommandLineRunner {
         }
     }
 
+    private void calculateFootballOdds() {
+        var footballMatches = footballMatchService.findAlL();
+        for (var footballMatch : footballMatches) {
+            var odds = footballMatch.getFootballOdds();
+            if (odds.size()>1) {
+                determineFootballArbitrageOpportunities(odds, footballMatch);
+            }
+        }
+    }
+
     private void calculateOdds() {
         var tennisMatches = tennisMatchService.getAllMatches();
         for (var tennisMatch : tennisMatches) {
@@ -136,6 +145,72 @@ public class SponsioRunner implements CommandLineRunner {
                 determineArbitrageOpportunities(odds, tennisMatch);
             }
         }
+    }
+
+    private void determineFootballArbitrageOpportunities(Set<FootballOdds> footballOdds, FootballMatch footballMatch) {
+        var match = footballMatch.getTeamOne() + BettingUtils.VS + footballMatch.getTeamTwo();
+        var oddsList = footballOdds.stream().toList();
+        for (int i = 0; i < oddsList.size()-1; i++) {
+            for (int j = 1; j < oddsList.size(); j++) {
+                var oddOne = oddsList.get(i);
+                var oddTwo = oddsList.get(j);
+
+                var allPossibleOutlays = calculateAllPossibleOutlays(oddOne, oddTwo, match);
+                var arbitrages = allPossibleOutlays.stream().filter(arbitrage -> arbitrage.getOutlay() < 1).toList();
+                for (Arbitrage arbitrage : arbitrages) {
+                    footballArbitrageMessage(arbitrage, match, footballMatch.getTeamOne(), footballMatch.getTeamTwo());
+                }
+            }
+        }
+    }
+
+    private List<Arbitrage> calculateAllPossibleOutlays(FootballOdds oddOne, FootballOdds oddTwo, String match) {
+        List<Arbitrage> allPossibleOutlays = new ArrayList<>();
+
+        allPossibleOutlays.add(
+                Arbitrage.builder()
+                        .outlay(1 / oddOne.getOddTeamOneWin() + 1 / oddTwo.getOddDraw() + 1/oddTwo.getOddTeamTwoWin())
+                        .oddOne(oddOne)
+                        .oddTwo(oddTwo)
+                        .arbitrageType(ArbitrageType.ARBITRAGE_1)
+                        .build());
+        allPossibleOutlays.add(
+                Arbitrage.builder()
+                        .outlay(1 / oddOne.getOddDraw() + 1 / oddTwo.getOddTeamOneWin() + 1/oddTwo.getOddTeamTwoWin())
+                        .oddOne(oddOne)
+                        .oddTwo(oddTwo)
+                        .arbitrageType(ArbitrageType.ARBITRAGE_2)
+                        .build());
+        allPossibleOutlays.add(
+                Arbitrage.builder()
+                        .outlay(1 / oddOne.getOddTeamTwoWin() + 1 / oddTwo.getOddDraw() + 1/oddTwo.getOddTeamOneWin())
+                        .oddOne(oddOne)
+                        .oddTwo(oddTwo)
+                        .arbitrageType(ArbitrageType.ARBITRAGE_3)
+                        .build());
+        allPossibleOutlays.add(
+                Arbitrage.builder()
+                        .outlay(1 / oddTwo.getOddTeamOneWin() + 1 / oddOne.getOddDraw() + 1/oddTwo.getOddTeamTwoWin())
+                        .oddOne(oddOne)
+                        .oddTwo(oddTwo)
+                        .arbitrageType(ArbitrageType.ARBITRAGE_4)
+                        .build());
+        allPossibleOutlays.add(
+                Arbitrage.builder()
+                        .outlay(1 / oddTwo.getOddDraw() + 1 / oddOne.getOddTeamOneWin() + 1/oddTwo.getOddTeamTwoWin())
+                        .oddOne(oddOne)
+                        .oddTwo(oddTwo)
+                        .arbitrageType(ArbitrageType.ARBITRAGE_5)
+                        .build());
+        allPossibleOutlays.add(
+                Arbitrage.builder()
+                        .outlay(1 / oddTwo.getOddTeamTwoWin() + 1 / oddOne.getOddTeamOneWin() + 1/oddTwo.getOddDraw())
+                        .oddOne(oddOne)
+                        .oddTwo(oddTwo)
+                        .arbitrageType(ArbitrageType.ARBITRAGE_6)
+                        .build());
+
+        return allPossibleOutlays;
     }
 
     private void determineArbitrageOpportunities(Set<Odds> odds, TennisMatch tennisMatch) {
@@ -170,6 +245,82 @@ public class SponsioRunner implements CommandLineRunner {
                     log.info("Winning: " + (1000-v2*1000));
                 }
             }
+        }
+    }
+
+    private void footballArbitrageMessage(Arbitrage arbitrage, String match, String teamOne, String teamTwo) {
+        var oddsOne = arbitrage.getOddOne();
+        var oddsTwo = arbitrage.getOddTwo();
+        log.info("Arbitrage opportunity found!");
+        log.info(match);
+        switch (arbitrage.getArbitrageType()) {
+            case ARBITRAGE_1 -> {
+                var outlay = 1000 / (1 + oddsOne.getOddTeamOneWin() / oddsTwo.getOddDraw() + oddsOne.getOddTeamOneWin() / oddsTwo.getOddTeamTwoWin());
+                log.info("Bet: ");
+                log.info("$" + outlay
+                        + " on " + teamOne + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsTwo.getOddDraw() / oddsOne.getOddTeamOneWin() + oddsTwo.getOddDraw() / oddsTwo.getOddTeamTwoWin())
+                        + " on " + teamTwo + " to draw on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsTwo.getOddTeamTwoWin() / oddsOne.getOddTeamOneWin() + oddsTwo.getOddTeamTwoWin() / oddsTwo.getOddDraw())
+                        + " on " + teamTwo + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("Guaranteed profit: " + (outlay*oddsOne.getOddTeamOneWin() - 1000));
+            }
+            case ARBITRAGE_2 -> {
+                log.info("Bet: ");
+                var outlay = 1000 / (1 + oddsOne.getOddDraw() / oddsTwo.getOddTeamOneWin() + oddsOne.getOddDraw() / oddsTwo.getOddTeamTwoWin());
+                log.info("$" + outlay
+                        + " on " + teamOne + " to draw on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsTwo.getOddTeamOneWin() / oddsOne.getOddDraw() + oddsTwo.getOddTeamOneWin() / oddsTwo.getOddTeamTwoWin())
+                        + " on " + teamOne + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsTwo.getOddTeamTwoWin() / oddsOne.getOddDraw() + oddsTwo.getOddTeamTwoWin() / oddsTwo.getOddTeamOneWin())
+                        + " on " + teamTwo + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("Guaranteed profit: " + (outlay*oddsOne.getOddDraw() - 1000));
+            }
+            case ARBITRAGE_3 -> {
+                log.info("Bet: ");
+                var outlay = 1000 / (1 + oddsOne.getOddTeamTwoWin() / oddsTwo.getOddDraw() + oddsOne.getOddTeamTwoWin() / oddsTwo.getOddTeamOneWin());
+                log.info("$" + outlay
+                        + " on " + teamTwo + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsTwo.getOddDraw() / oddsOne.getOddTeamTwoWin() + oddsTwo.getOddDraw() / oddsTwo.getOddTeamOneWin())
+                        + " on " + teamTwo + " to draw on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsTwo.getOddTeamOneWin() / oddsOne.getOddTeamTwoWin() + oddsTwo.getOddTeamOneWin() / oddsTwo.getOddDraw())
+                        + " on " + teamOne + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("Guaranteed profit: " + (outlay*oddsOne.getOddTeamTwoWin() - 1000));
+            }
+            case ARBITRAGE_4 -> {
+                log.info("Bet: ");
+                var outlay = 1000 / (1 + oddsTwo.getOddTeamOneWin() / oddsOne.getOddDraw() + oddsTwo.getOddTeamOneWin() / oddsOne.getOddTeamTwoWin());
+                log.info("$" + outlay
+                        + " on " + teamOne + " to win on Boookie " + oddsTwo.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsOne.getOddDraw() / oddsTwo.getOddTeamOneWin() + oddsOne.getOddDraw() / oddsOne.getOddTeamTwoWin())
+                        + " on " + teamOne + " to draw on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsOne.getOddTeamTwoWin() / oddsTwo.getOddTeamOneWin() + oddsOne.getOddTeamTwoWin() / oddsOne.getOddDraw())
+                        + " on " + teamTwo + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("Guaranteed profit: " + (outlay*oddsTwo.getOddTeamOneWin() - 1000));
+            }
+            case ARBITRAGE_5 -> {
+                log.info("Bet: ");
+                var outlay = 1000 / (1 + oddsTwo.getOddDraw() / oddsOne.getOddTeamOneWin() + oddsTwo.getOddDraw() / oddsOne.getOddTeamTwoWin());
+                log.info("$" + outlay
+                        + " on " + teamTwo + " to draw on Boookie " + oddsTwo.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsOne.getOddTeamOneWin() / oddsTwo.getOddDraw() + oddsOne.getOddTeamOneWin() / oddsOne.getOddTeamTwoWin())
+                        + " on " + teamOne + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsOne.getOddTeamTwoWin() / oddsTwo.getOddDraw() + oddsOne.getOddTeamTwoWin() / oddsOne.getOddTeamOneWin())
+                        + " on " + teamTwo + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("Guaranteed profit: " + (outlay*oddsTwo.getOddDraw() - 1000));
+            }
+            case ARBITRAGE_6 -> {
+                log.info("Bet: ");
+                var outlay = 1000 / (1 + oddsTwo.getOddTeamTwoWin() / oddsOne.getOddTeamOneWin() + oddsTwo.getOddTeamTwoWin() / oddsOne.getOddDraw());
+                log.info("$" + outlay
+                        + " on " + teamTwo + " to win on Boookie " + oddsTwo.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsOne.getOddDraw() / oddsTwo.getOddTeamTwoWin() + oddsOne.getOddDraw() / oddsOne.getOddTeamOneWin())
+                        + " on " + teamOne + " to draw on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("$" + 1000 / (1 + oddsOne.getOddTeamOneWin() / oddsTwo.getOddDraw() + oddsOne.getOddTeamOneWin() / oddsOne.getOddTeamTwoWin())
+                        + " on " + teamOne + " to win on Boookie " + oddsOne.getBookie().getBookieName());
+                log.info("Guaranteed profit: " + (outlay*oddsTwo.getOddTeamTwoWin() - 1000));
+            }
+            default -> log.info("Don't bet anything");
         }
     }
 }

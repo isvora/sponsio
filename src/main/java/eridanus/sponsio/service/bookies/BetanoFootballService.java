@@ -51,13 +51,15 @@ public class BetanoFootballService {
     }
 
     private void saveBetanoFotbalMatches(BetanoFootballMatchData matchData) {
-        matchData.getBlocks().get(0).getEvents().forEach(betanoEvent -> {
-            var footballMatch = FootballMatchMapper.mapBetano(betanoEvent);
-            if (footballMatch.isPresent()) {
-                footballMatchService.save(footballMatch.get());
-                var footballOdds = FootballOddsMapper.mapBetano(betanoEvent, footballMatch.get());
-                footballOdds.ifPresent(footballOddsService::save);
-            }
-        });
+        if (matchData != null) {
+            matchData.getBlocks().get(0).getEvents().forEach(betanoEvent -> {
+                var footballMatch = FootballMatchMapper.mapBetano(betanoEvent);
+                if (footballMatch.isPresent()) {
+                    footballMatchService.save(footballMatch.get());
+                    var footballOdds = FootballOddsMapper.mapBetano(betanoEvent, footballMatch.get());
+                    footballOdds.ifPresent(footballOddsService::save);
+                }
+            });
+        }
     }
 }
