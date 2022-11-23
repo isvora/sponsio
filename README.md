@@ -209,5 +209,4 @@ Betting $452.63 on an Everton win, $310.76 on a draw, and $236.60 on an Everton 
 2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Bet 826.4462809917355 on 1.21 BETANO
 2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Bet 105.26315789473684 on 9.5 BETANO
 2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Winning: 68.29056111352759
-2022-11-23 16:13:58.229  INFO 1904 --- [           main] eridanus.sponsio.runner.SponsioRunner    : Odds from BETANO: 2.95, Odds fr
 ```
